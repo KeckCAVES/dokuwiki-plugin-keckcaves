@@ -1,0 +1,7 @@
+base   keckcaves
+author Braden Pellett
+email  bpellett@ucdavis.edu
+date   development
+name   Miscellaneous KeckCAVES functionality
+desc   Provides various functionality for KeckCAVES website that doesn't seem worthy of a separate plugin (until it does).
+url    https://github.com/KeckCAVES/dokuwiki-plugin-keckcaves

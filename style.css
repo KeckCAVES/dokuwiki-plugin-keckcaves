@@ -1,0 +1,38 @@
+////////////////////////////////////////////////////////////////////////////////
+// DESCRIPTION
+//
+
+div.dokuwiki .kc-description {
+  margin: 2em 0;
+  font-size: 1.5em;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// SUMMARY
+//
+
+.kc-summary dl {
+  margin: 0;
+  padding: 0;
+}
+.kc-summary a, .kc-summary a:visited, .kc-summary a:link {
+  color: __text__ !important;
+}
+.kc-summary dt {
+  margin: 1em 0 0.5em 0;
+  font-size: 1.3em;
+}
+.kc-summary dt:hover {
+  background: __background_neu__;
+}
+.kc-summary dt a {
+  display: block;
+}
+.kc-summary dd {
+  margin: 0.5em 0 0 1em;
+}
+.kc-summary dd img {
+  float: right;
+  max-height: 140px;
+  margin: 0 0 0.5em 1em;
+}
