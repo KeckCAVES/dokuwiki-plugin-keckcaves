@@ -75,7 +75,11 @@ class syntax_plugin_keckcaves_summary extends DokuWiki_Syntax_Plugin {
         resolve_pageid($ns,$image,$exists);
         $this->_page = wl($page);
         $image_size = @getimagesize(mediaFN($image));
-        $width = (int)round($image_size[0]*$height/$image_size[1]);
+        if($image_size[1]) {
+          $width = (int)round($image_size[0]*$height/$image_size[1]);
+        } else {
+          $width = $image_size[0];
+        }
         $data .= '<dt><a href="'.$this->_page.'">'.htmlentities($title).'</a></dt>';
         $data .= '<dd><a href="'.$this->_page.'"><img src="'.ml($image,array('w'=>$width,'h'=>$height)).'"/></a>';
     }
