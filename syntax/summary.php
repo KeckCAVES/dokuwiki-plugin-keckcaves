@@ -38,35 +38,21 @@ class syntax_plugin_keckcaves_summary extends DokuWiki_Syntax_Plugin {
                 ++$this->_id;
                 preg_match($pattern, $match, $matches);
                 list(,$title,$page,$image) = $matches;
-                $this->_linked = (trim($page) != "");
                 resolve_pageid($ns,$page,$exists);
                 resolve_pageid($ns,$image,$exists);
                 $data .= '<div class="clearer"></div>';
                 $data .= '<dl class="kc-summary" id="kc-summary'.$this->_id.'">';
-                if ($this->_linked) {
-                    $data .= '<dt><a href="'.wl($page).'">'.htmlentities($title).'</dt>';
-                    $data .= '<dd><a href="'.wl($page).'"><img src="'.ml($image).'"/>';
-                } else {
-                    $data .= '<dt>'.$title.'</dt>';
-                    $data .= '<dd><img src="'.ml($image).'"/>';
-                }
+                $this->_start_item($title,$page,$image,$data);
                 break;
             case DOKU_LEXER_MATCHED: // a pattern set by addPattern()
                 preg_match($pattern, $match, $matches);
                 list(,$title,$page,$image) = $matches;
-                if ($this->_linked) $data .= '</a>';
                 resolve_pageid($ns,$page,$exists);
                 resolve_pageid($ns,$image,$exists);
+                if ($this->_linked) $data .= '</a>';
                 $data .= '</dd>';
-                $this->_linked = (trim($page) != "");
                 $data .= '<div class="clearer"></div>';
-                if ($this->_linked) {
-                    $data .= '<dt><a href="'.wl($page).'">'.htmlentities($title).'</dt>';
-                    $data .= '<dd><a href="'.wl($page).'"><img src="'.ml($image).'"/>';
-                } else {
-                    $data .= '<dt>'.$title.'</dt>';
-                    $data .= '<dd><img src="'.ml($image).'"/>';
-                }
+                $this->_start_item($title,$page,$image,$data);
                 break;
             case DOKU_LEXER_SPECIAL: // a pattern set by addSpecialPattern()
                 break;
@@ -89,5 +75,19 @@ class syntax_plugin_keckcaves_summary extends DokuWiki_Syntax_Plugin {
             return true;
         }
         return false;
+    }
+
+    function _start_item($title, $page, $image, &$data) {
+        $height = 140;
+        $image_size = @getimagesize(mediaFN($image));
+        $width = (int)round($image_size[0]*$height/$image_size[1]);
+        $this->_linked = (trim($page) != "");
+        if ($this->_linked) {
+            $data .= '<dt><a href="'.wl($page).'">'.htmlentities($title).'</dt>';
+            $data .= '<dd><a href="'.wl($page).'"><img src="'.ml($image,array('w'=>$width,'h'=>$height)).'"/>';
+        } else {
+            $data .= '<dt>'.$title.'</dt>';
+            $data .= '<dd><img src="'.ml($image).'"/>';
+        }
     }
 }
