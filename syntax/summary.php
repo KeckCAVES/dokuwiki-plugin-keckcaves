@@ -32,35 +32,24 @@ class syntax_plugin_keckcaves_summary extends DokuWiki_Syntax_Plugin {
         $data='';
         global $ID;
         $ns = getNS($ID);
-        $pattern = '/[^*]*\*([^[]*)\[([^]]*)\][ \t]*\{([^}]*)\}/';
         switch ($state) {
             case DOKU_LEXER_ENTER: // a pattern set by addEntryPattern()
                 ++$this->_id;
-                preg_match($pattern, $match, $matches);
-                list(,$title,$page,$image) = $matches;
-                resolve_pageid($ns,$page,$exists);
-                resolve_pageid($ns,$image,$exists);
                 $data .= '<div class="clearer"></div>';
                 $data .= '<dl class="kc-summary" id="kc-summary'.$this->_id.'">';
-                $this->_start_item($title,$page,$image,$data);
+                $this->_start_item($match,$data);
                 break;
             case DOKU_LEXER_MATCHED: // a pattern set by addPattern()
-                preg_match($pattern, $match, $matches);
-                list(,$title,$page,$image) = $matches;
-                resolve_pageid($ns,$page,$exists);
-                resolve_pageid($ns,$image,$exists);
-                if ($this->_linked) $data .= '</a>';
                 $data .= '</dd>';
                 $data .= '<div class="clearer"></div>';
-                $this->_start_item($title,$page,$image,$data);
+                $this->_start_item($match,$data);
                 break;
             case DOKU_LEXER_SPECIAL: // a pattern set by addSpecialPattern()
                 break;
             case DOKU_LEXER_UNMATCHED: // ordinary text encountered within the plugin's syntax mode which doesn't match any pattern
-                $data = htmlentities($match);
+                $this->_linkify($match,$data);
                 break;
             case DOKU_LEXER_EXIT: // a pattern set by addExitPattern()
-                if ($this->_linked) $data .= '</a>';
                 $data .= '</dd>';
                 $data .= '</dl>';
                 $data .= '<div class="clearer"></div>';
@@ -77,17 +66,21 @@ class syntax_plugin_keckcaves_summary extends DokuWiki_Syntax_Plugin {
         return false;
     }
 
-    function _start_item($title, $page, $image, &$data) {
+    function _start_item($match, &$data) {
+        $pattern = '/[^*]*\*([^[]*)\[([^]]*)\][ \t]*\{([^}]*)\}/';
         $height = 140;
+        preg_match($pattern, $match, $matches);
+        list(,$title,$page,$image) = $matches;
+        resolve_pageid($ns,$page,$exists);
+        resolve_pageid($ns,$image,$exists);
+        $this->_page = wl($page);
         $image_size = @getimagesize(mediaFN($image));
         $width = (int)round($image_size[0]*$height/$image_size[1]);
-        $this->_linked = (trim($page) != "");
-        if ($this->_linked) {
-            $data .= '<dt><a href="'.wl($page).'">'.htmlentities($title).'</dt>';
-            $data .= '<dd><a href="'.wl($page).'"><img src="'.ml($image,array('w'=>$width,'h'=>$height)).'"/>';
-        } else {
-            $data .= '<dt>'.$title.'</dt>';
-            $data .= '<dd><img src="'.ml($image).'"/>';
-        }
+        $data .= '<dt><a href="'.$this->_page.'">'.htmlentities($title).'</a></dt>';
+        $data .= '<dd><a href="'.$this->_page.'"><img src="'.ml($image,array('w'=>$width,'h'=>$height)).'"/></a>';
+    }
+
+    function _linkify($text,&$data) {
+        $data .= '<a href="'.$this->_page.'">'.htmlentities($text).'</a>';
     }
 }
