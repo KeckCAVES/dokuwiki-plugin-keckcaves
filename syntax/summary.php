@@ -30,8 +30,6 @@ class syntax_plugin_keckcaves_summary extends DokuWiki_Syntax_Plugin {
   
     function handle($match, $state, $pos, &$handler) {
         $data='';
-        global $ID;
-        $ns = getNS($ID);
         switch ($state) {
             case DOKU_LEXER_ENTER: // a pattern set by addEntryPattern()
                 ++$this->_id;
@@ -69,6 +67,8 @@ class syntax_plugin_keckcaves_summary extends DokuWiki_Syntax_Plugin {
     function _start_item($match, &$data) {
         $pattern = '/[^*]*\*([^[]*)\[([^]]*)\][ \t]*\{([^}]*)\}/';
         $height = 140;
+        global $ID;
+        $ns = getNS($ID);
         preg_match($pattern, $match, $matches);
         list(,$title,$page,$image) = $matches;
         resolve_pageid($ns,$page,$exists);
