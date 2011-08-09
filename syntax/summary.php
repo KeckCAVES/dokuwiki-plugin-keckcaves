@@ -86,7 +86,7 @@ class syntax_plugin_keckcaves_summary extends DokuWiki_Syntax_Plugin {
 
     function _start_item($match, &$data) {
         $pattern = '/[^*]*\*([^[]*)\[([^]]*)\][ \t]*\{([^}]*)\}/';
-        $height = 140;
+        $height = $this->getConf('height');
         global $ID;
         $ns = getNS($ID);
         preg_match($pattern, $match, $matches);
