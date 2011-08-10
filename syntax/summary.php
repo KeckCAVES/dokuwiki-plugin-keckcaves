@@ -33,25 +33,26 @@ class syntax_plugin_keckcaves_summary extends DokuWiki_Syntax_Plugin {
         switch ($state) {
             case DOKU_LEXER_ENTER: // a pattern set by addEntryPattern()
                 ++$this->_id;
+                $this->_count = 0;
                 $this->_level = $this->_find_current_level($handler);
                 $this->_section_ids = array();
-                $data[0] .= '<div class="clearer"></div>';
-                $data[0] .= '<dl class="kc-summary" id="kc-summary'.$this->_id.'">';
+                //$data[0] .= '<div class="clearer"></div>';
+                $data[0] .= '<ul class="kc-summary" id="kc-summary'.$this->_id.'">';
                 $this->_start_item($match,$data);
                 break;
             case DOKU_LEXER_MATCHED: // a pattern set by addPattern()
-                $data[0] .= '</dd>';
-                $data[0] .= '<div class="clearer"></div>';
+                $data[0] .= '</li>';
+                //$data[0] .= '<div class="clearer"></div>';
                 $this->_start_item($match,$data);
                 break;
             case DOKU_LEXER_SPECIAL: // a pattern set by addSpecialPattern()
                 break;
             case DOKU_LEXER_UNMATCHED: // ordinary text encountered within the plugin's syntax mode which doesn't match any pattern
-                $this->_linkify($match,$data);
+                $this->_linkify(htmlentities($match),$data);
                 break;
             case DOKU_LEXER_EXIT: // a pattern set by addExitPattern()
-                $data[0] .= '</dd>';
-                $data[0] .= '</dl>';
+                $data[0] .= '</li>';
+                $data[0] .= '</ul>';
                 $data[0] .= '<div class="clearer"></div>';
                 break;
         }
@@ -91,24 +92,46 @@ class syntax_plugin_keckcaves_summary extends DokuWiki_Syntax_Plugin {
         $ns = getNS($ID);
         preg_match($pattern, $match, $matches);
         list(,$title,$page,$image) = $matches;
-        resolve_pageid($ns,$page,$exists);
-        resolve_pageid($ns,$image,$exists);
-        $this->_page = wl($page);
-        $image_size = @getimagesize(mediaFN($image));
-        if($image_size[1]) {
-          $width = (int)round($image_size[0]*$height/$image_size[1]);
+        $this->_page = '';
+        if (trim($page)) {
+          resolve_pageid($ns,$page,$exists);
+          $this->_page = wl($page);
+        }
+        if (trim($image)) {
+          resolve_mediaid($ns,$image,$exists);
+          $image_size = @getimagesize(mediaFN($image));
+          if($image_size[1]) {
+            $width = (int)round($image_size[0]*$height/$image_size[1]);
+          } else {
+            $width = $image_size[0];
+          }
         } else {
-          $width = $image_size[0];
+          $image = '';
         }
         $sid = sectionID($title,$this->_section_ids);
-        $data[0] .= '<dt><a name="'.$sid.'" href="'.$this->_page.'">'.htmlentities($title).'</a></dt>';
-        $data[0] .= '<dd><a href="'.$this->_page.'"><img src="'.ml($image,array('w'=>$width,'h'=>$height)).'"/></a>';
+        if ($this->_count % 2) {
+          $side = 'right';
+        } else {
+          $side = 'left';
+        }
+        $data[0] .= '<li class="'.$side.'"><a name="'.$sid.'"></a>';
+        $data[0] .= '<h'.strval($this->_level).'>';
+        $this->_linkify(htmlentities($title), $data);
+        $data[0] .= '</h'.strval($this->_level).'>';
+        if ($image) {
+          $this->_linkify('<img src="'.ml($image,array('w'=>$width,'h'=>$height)).'"/>', $data);
+        }
         $data[1] = $sid;
         $data[2] = $title;
         $data[3] = $this->_level;
+        ++$this->_count;
     }
 
     function _linkify($text,&$data) {
-        $data[0] .= '<a href="'.$this->_page.'">'.htmlentities($text).'</a>';
+      if ($this->_page) {
+        $data[0] .= '<a href="'.$this->_page.'">'.$text.'</a>';
+      } else {
+        $data[0] .= $text;
+      }
     }
 }

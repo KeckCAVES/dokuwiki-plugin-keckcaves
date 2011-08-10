@@ -11,27 +11,43 @@ div.dokuwiki .kc-description {
 // SUMMARY
 //
 
-.kc-summary dl {
-  margin: 0;
+ul.kc-summary {
+  list-style: none;
   padding: 0;
+  line-height: normal !important;
+  margin: 0 0 1em 1em !important;
+  color: __text__ !important;
 }
+.kc-summary li {
+  display: block;
+  float: left;
+  max-width: 28em;
+  margin: 0 0 2em 0;
+}
+.kc-summary li.left {
+  clear: left;
+  margin-right: 2em;
+}
+.kc-summary img {
+  float: right;
+  margin: 0 0 1em 1em;
+} 
 .kc-summary a, .kc-summary a:visited, .kc-summary a:link {
   color: __text__ !important;
 }
-.kc-summary dt {
-  margin: 1em 0 0.5em 0;
-  font-size: 1.3em;
+.kc-summary h1,
+  .kc-summary h2,
+  .kc-summary h3,
+  .kc-summary h4,
+  .kc-summary h5
+{
+  margin-left: 0 !important;
 }
-.kc-summary dt:hover {
+.kc-summary h1:hover,
+  .kc-summary h2:hover,
+  .kc-summary h3:hover,
+  .kc-summary h4:hover,
+  .kc-summary h5:hover
+{
   background: __background_neu__;
-}
-.kc-summary dt a {
-  display: block;
-}
-.kc-summary dd {
-  margin: 0.5em 0 0 1em;
-}
-.kc-summary dd img {
-  float: right;
-  margin: 0 0 0.5em 1em;
 }
